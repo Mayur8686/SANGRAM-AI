@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { models, accentVars } from '../data/models'
 import {
   BrandLogo,
@@ -12,7 +12,7 @@ import {
   IconStepAnswer,
   IconArrowRight,
   IconInfo,
-  IconContention,
+  IconContention,       
   IconHistory
 } from './Icons'
 
@@ -370,40 +370,86 @@ export default function Landing({ onEnter, onOpenHistory }) {
   )
 }
 
+
+const CONTACT_EMAIL = 'nikhil@sangramai.tech'
+
 function Footer({ onEnter, onOpenHistory }) {
-  const scrollTo = (sel) => document.querySelector(sel)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const scrollTo = (sel) =>
+    document.querySelector(sel)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+
   return (
     <footer className="footer no-print">
       <div className="container footer-grid">
         <div className="footer-brand-col">
           <BrandLogo showTagline size="sm" />
           <p className="footer-about">
-            SANGRAM AI is a multi-model debate and synthesis arena: two distinct AI minds challenge each other's
-            reasoning in one shared timeline and converge on a stronger consolidated answer.
+            SANGRAM AI is a multi-model debate and synthesis arena:
+            two distinct AI minds challenge each other's reasoning
+            in one shared timeline and converge on a stronger
+            consolidated answer.
           </p>
-          <p className="footer-note">Frontend prototype. Battles are deterministic local simulations — no external model APIs are connected.</p>
+          <p className="footer-note">
+            Frontend prototype. Battles use local demo data.
+          </p>
         </div>
 
         <nav className="footer-col" aria-label="Footer navigation">
           <h3>Platform</h3>
-          <a href="#benefits" onClick={(e) => { e.preventDefault(); scrollTo('#benefits') }}>Why Sangram</a>
-          <a href="#how" onClick={(e) => { e.preventDefault(); scrollTo('#how') }}>How It Works</a>
-          <a href="#models" onClick={(e) => { e.preventDefault(); scrollTo('#models') }}>Model Roster</a>
-          <button type="button" className="footer-link-btn" onClick={onEnter}>Enter the Arena</button>
-          <button type="button" className="footer-link-btn" onClick={onOpenHistory}>Recent battles</button>
+          <a href="#benefits" onClick={(e) => {
+            e.preventDefault()
+            scrollTo('#benefits')
+          }}>Why Sangram</a>
+          <a href="#how" onClick={(e) => {
+            e.preventDefault()
+            scrollTo('#how')
+          }}>How It Works</a>
+          <a href="#models" onClick={(e) => {
+            e.preventDefault()
+            scrollTo('#models')
+          }}>Model Roster</a>
+          <button type="button" className="footer-link-btn" onClick={onEnter}>
+            Enter the Arena
+          </button>
+          <button type="button" className="footer-link-btn" onClick={onOpenHistory}>
+            Recent battles
+          </button>
         </nav>
 
         <div className="footer-col">
           <h3>Contact</h3>
-          <a className="footer-contact-link" href="mailto:nikhil@sangramai.tech">nikhil@sangramai.tech</a>
-          <a className="footer-contact-link" href="https://wa.me/917822902947" target="_blank" rel="noopener noreferrer">WhatsApp: +91 78229 02947</a>
-          <p className="footer-note">For demo feedback and partnership enquiries.</p>
+          <a
+            className="footer-contact-link"
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=nikhil%40sangramai.tech"
+          >
+            {CONTACT_EMAIL}
+          </a>
+
+          <a
+            className="footer-contact-link"
+            href="https://wa.me/917822902947"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WhatsApp: +91 78229 02947
+          </a>
+
+          <p className="footer-note">
+            For demo feedback and partnership enquiries.
+          </p>
         </div>
       </div>
+
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} SANGRAM AI — Different Minds. One Arena.</span>
+        <span>
+          © {new Date().getFullYear()} SANGRAM AI — Different Minds. One Arena.
+        </span>
         <span>Multi-model debate &amp; synthesis · frontend prototype</span>
       </div>
     </footer>
   )
 }
+
+  
