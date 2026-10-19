@@ -45,7 +45,7 @@ function Navbar({ view, setView }){
   return (
     <nav className="nav">
       <div className="container nav-inner">
-        <button onClick={()=>go('landing')} style={{background:'none',border:'none',cursor:'pointer'}}>
+        <button onClick={()=>go('landing')} className="nav-logo-btn" aria-label="Go home">
           <Logo/>
         </button>
         <div className={`nav-links ${open?'open':''}`}>
@@ -237,35 +237,60 @@ function Config({ selected, setSelected, question, setQuestion, setView, setBatt
         {error && <div className="error-msg" style={{marginTop:12}}>{error}</div>}
       </div>
 
-      <div className="slots">
-        {[0,1].map(idx=>(
-          <div key={idx} className={`slot ${selected[idx]?'selected':''}`}>
-            <div className="slot-head">
-              <h3>Slot {idx+1} {selected[idx]?'• Ready':''}</h3>
-              {selected[idx] && <button className="btn-ghost" onClick={()=>clearSlot(idx)}>Change</button>}
-            </div>
-            {!selected[idx] ? (
-              <div className="slot-empty">
-                <div>
-                  <div style={{fontSize:22, marginBottom:6}}>⬡</div>
-                  <div style={{fontWeight:700, color:'var(--text-primary)'}}>No fighter selected</div>
-                  <div style={{fontSize:12, marginTop:4}}>Pick a model from the catalog below</div>
-                </div>
-              </div>
-            ) : (
-              <div className="slot-chosen">
-                <div className="slot-chosen-icon" style={{background: selected[idx].color}}>{selected[idx].icon}</div>
-                <div style={{flex:1}}>
-                  <b style={{fontSize:15}}>{selected[idx].name}</b> <small style={{color:'var(--text-secondary)'}}>• {selected[idx].provider}</small>
-                  <div style={{fontSize:12, color:'var(--text-secondary)', marginTop:2}}>{selected[idx].model}</div>
-                </div>
-              </div>
-            )}
+         <div className="slots">
+        {/* Slot 1 */}
+        <div className={`slot ${selected[0]?'selected':''}`}>
+          <div className="slot-head">
+            <h3>Slot 1 {selected[0]?'• Ready':''}</h3>
+            {selected[0] && <button className="btn-ghost" onClick={()=>clearSlot(0)}>Change</button>}
           </div>
-        ))}
+          {!selected[0] ? (
+            <div className="slot-empty">
+              <div>
+                <div style={{fontSize:22, marginBottom:6}}>⬡</div>
+                <div style={{fontWeight:700, color:'var(--text-primary)'}}>No fighter selected</div>
+                <div style={{fontSize:12, marginTop:4}}>Pick a model from the catalog below</div>
+              </div>
+            </div>
+          ) : (
+            <div className="slot-chosen">
+              <div className="slot-chosen-icon" style={{background: selected[0].color}}>{selected[0].icon}</div>
+              <div style={{flex:1}}>
+                <b style={{fontSize:15}}>{selected[0].name}</b> <small style={{color:'var(--text-secondary)'}}>• {selected[0].provider}</small>
+                <div style={{fontSize:12, color:'var(--text-secondary)', marginTop:2}}>{selected[0].model}</div>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="vs-col">
           <div className="vs-badge">VS</div>
           <small style={{color:'var(--text-muted)', fontWeight:700, letterSpacing:'0.08em', textTransform:'uppercase'}}>Best of 4 Rounds</small>
+        </div>
+
+        {/* Slot 2 */}
+        <div className={`slot ${selected[1]?'selected':''}`}>
+          <div className="slot-head">
+            <h3>Slot 2 {selected[1]?'• Ready':''}</h3>
+            {selected[1] && <button className="btn-ghost" onClick={()=>clearSlot(1)}>Change</button>}
+          </div>
+          {!selected[1] ? (
+            <div className="slot-empty">
+              <div>
+                <div style={{fontSize:22, marginBottom:6}}>⬡</div>
+                <div style={{fontWeight:700, color:'var(--text-primary)'}}>No fighter selected</div>
+                <div style={{fontSize:12, marginTop:4}}>Pick a model from the catalog below</div>
+              </div>
+            </div>
+          ) : (
+            <div className="slot-chosen">
+              <div className="slot-chosen-icon" style={{background: selected[1].color}}>{selected[1].icon}</div>
+              <div style={{flex:1}}>
+                <b style={{fontSize:15}}>{selected[1].name}</b> <small style={{color:'var(--text-secondary)'}}>• {selected[1].provider}</small>
+                <div style={{fontSize:12, color:'var(--text-secondary)', marginTop:2}}>{selected[1].model}</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
