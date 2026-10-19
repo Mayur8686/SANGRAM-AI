@@ -426,53 +426,105 @@ function Landing({ setView }) {
         </div>
       </section>
 
-      {/* 7. Footer */}
-      <footer className="footer">
-        <div className="container footer-inner">
-          <div className="footer-brand-col">
-            <BrandLogo showTagline size="sm" />
-            <p className="footer-note">
-              Frontend prototype using deterministic local simulation data. No live external model APIs are connected.
-            </p>
+            {/* 7. Footer */}
+      <footer id="about" className="footer">
+        <div className="container">
+          <div className="footer-grid">
+            {/* About Column */}
+            <div className="footer-brand-col">
+              <BrandLogo showTagline size="sm" />
+              <p className="footer-about-text">
+                <strong>SANGRAM AI</strong> is a multi-model debate and synthesis arena where two distinct AI minds challenge each other's reasoning in a shared timeline to converge on one stronger, consolidated answer.
+              </p>
+              <p className="footer-note">
+                Frontend prototype using deterministic local simulation data. No live external model APIs are connected.
+              </p>
+            </div>
+
+            {/* Navigation Column */}
+            <div className="footer-col">
+              <h4 className="footer-heading">Platform</h4>
+              <div className="footer-links-stack">
+                <a
+                  href="#benefits"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    document.querySelector('#benefits')?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  Why Sangram
+                </a>
+                <a
+                  href="#how"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    document.querySelector('#how')?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  How It Works
+                </a>
+                <a
+                  href="#models"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    document.querySelector('#models')?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  Model Roster
+                </a>
+                <button
+                  type="button"
+                  className="footer-link-btn"
+                  onClick={() => {
+                    setView('config')
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                >
+                  Enter the Arena
+                </button>
+              </div>
+            </div>
+
+            {/* Contact & Info Column */}
+            <div className="footer-col">
+               <div className="footer-contact-item">
+                  <span className="contact-label">Email</span>
+                  <div className="contact-email-row">
+                    <a
+                      href="https://mail.google.com/mail/?view=cm&fs=1&to=nikhil@sangramai.tech"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="contact-link"
+                    >
+                      nikhil@sangramai.tech
+                    </a>
+                    <a
+                      href="mailto:nikhil@sangramai.tech"
+                      className="contact-sub-action"
+                      title="Open default mail app"
+                    >
+                      
+                    </a>
+                  </div>
+                
+                <div className="footer-contact-item">
+                  <span className="contact-label">WhatsApp</span>
+                  <a
+                    href="https://wa.me/917822902947"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-link"
+                  >
+                    +91 78229 02947
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="footer-links">
-            <a
-              href="#benefits"
-              onClick={(e) => {
-                e.preventDefault()
-                document.querySelector('#benefits')?.scrollIntoView({ behavior: 'smooth' })
-              }}
-            >
-              Benefits
-            </a>
-            <a
-              href="#how"
-              onClick={(e) => {
-                e.preventDefault()
-                document.querySelector('#how')?.scrollIntoView({ behavior: 'smooth' })
-              }}
-            >
-              How It Works
-            </a>
-            <a
-              href="#models"
-              onClick={(e) => {
-                e.preventDefault()
-                document.querySelector('#models')?.scrollIntoView({ behavior: 'smooth' })
-              }}
-            >
-              Models
-            </a>
-            <button
-              type="button"
-              className="footer-link-btn"
-              onClick={() => {
-                setView('config')
-                window.scrollTo({ top: 0, behavior: 'smooth' })
-              }}
-            >
-              Enter the Arena
-            </button>
+
+          <div className="footer-bottom">
+            <span>© {new Date().getFullYear()} SANGRAM AI — Different Minds. One Arena.</span>
+            <span>Multi-Model Debate &amp; Synthesis Platform</span>
           </div>
         </div>
       </footer>

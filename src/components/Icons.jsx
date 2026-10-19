@@ -5,7 +5,7 @@ import React from 'react'
  * Sangram AI brand mark asset is added to the repository.
  * While null, a restrained neutral geometric placeholder is rendered.
  */
-export const OFFICIAL_LOGO_SRC = null
+export const OFFICIAL_LOGO_SRC = '/sangram-logo.png'
 
 export function BrandLogo({ showTagline = false, size = 'md' }) {
   const boxSize = size === 'sm' ? 28 : 32
