@@ -1,376 +1,880 @@
 import { useEffect, useState, useRef } from 'react'
 import './styles/global.css'
 import './App.css'
-import { models } from './data/models'
+import { models, examplePrompts } from './data/models'
 import { generateBattle, stages } from './services/battleService'
+import {
+  BrandLogo,
+  ModelIcon,
+  IconCompare,
+  IconChallenge,
+  IconSynthesize,
+  IconStepSelect,
+  IconStepQuestion,
+  IconStepBattle,
+  IconStepAnswer,
+  IconArrowRight,
+  IconArrowLeft,
+  IconCheck,
+  IconCopy,
+  IconReset,
+  IconReplyTarget,
+  IconMenu
+} from './components/Icons'
 
-const examplePrompts = [
-  "Python vs JavaScript for beginners.",
-  "Which technology should I learn next?",
-  "What is the best solution to this coding problem?",
-  "Is remote work better than office work?",
-  "What will AI look like in 2030?",
-]
-
-function Logo(){
-  return (
-    <div className="brand">
-      <div className="brand-mark">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L20 7v10l-8 5-8-5V7l8-5z" stroke="currentColor" strokeWidth="1.7" />
-          <path d="M12 2v20M20 7L4 17M4 7l16 10" stroke="currentColor" strokeWidth="1.2" opacity="0.9"/>
-          <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
-        </svg>
-      </div>
-      <span>SANGRAM AI <sup>AI ARENA</sup></span>
-    </div>
-  )
-}
-
-function Navbar({ view, setView }){
+function Navbar({ view, setView }) {
   const [open, setOpen] = useState(false)
-  const go = (v, section) => {
+
+  const navigate = (targetView, sectionSelector) => {
     setOpen(false)
-    if(v === 'landing' && section){
+    if (targetView === 'landing' && sectionSelector) {
       setView('landing')
-      setTimeout(()=> document.querySelector(section)?.scrollIntoView({behavior:'smooth'}), 80)
-    } else if(v === 'landing') {
-      setView('landing')
-      window.scrollTo({top:0, behavior:'smooth'})
+      setTimeout(() => {
+        document.querySelector(sectionSelector)?.scrollIntoView({ behavior: 'smooth' })
+      }, 60)
     } else {
-      setView(v)
-      window.scrollTo({top:0, behavior:'smooth'})
+      setView(targetView)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
+
   return (
-    <nav className="nav">
+    <header className="nav">
       <div className="container nav-inner">
-        <button onClick={()=>go('landing')} className="nav-logo-btn" aria-label="Go home">
-          <Logo/>
+        <button
+          type="button"
+          onClick={() => navigate('landing')}
+          className="nav-logo-btn"
+          aria-label="SANGRAM AI Home"
+        >
+          <BrandLogo />
         </button>
-        <div className={`nav-links ${open?'open':''}`}>
-          <a href="#home" onClick={(e)=>{e.preventDefault(); go('landing','#home')}}>Home</a>
-          <a href="#how" onClick={(e)=>{e.preventDefault(); go('landing','#how')}}>How It Works</a>
-          <a href="#models" onClick={(e)=>{e.preventDefault(); go('landing','#models')}}>Models</a>
-          <a href="#about" onClick={(e)=>{e.preventDefault(); go('landing','#about')}}>About</a>
-          <button className="btn-primary" style={{padding:'10px 18px', fontSize:'14px'}} onClick={()=>go('config')}>Enter Arena →</button>
-        </div>
-        <div className="nav-cta">
-          <button className="hamburger" onClick={()=>setOpen(!open)} aria-label="menu">{open?'✕':'☰'}</button>
+
+        <nav className={`nav-links ${open ? 'open' : ''}`} aria-label="Main navigation">
+          <a
+            href="#benefits"
+            onClick={(e) => {
+              e.preventDefault()
+              navigate('landing', '#benefits')
+            }}
+          >
+            Why Sangram
+          </a>
+          <a
+            href="#how"
+            onClick={(e) => {
+              e.preventDefault()
+              navigate('landing', '#how')
+            }}
+          >
+            How It Works
+          </a>
+          <a
+            href="#models"
+            onClick={(e) => {
+              e.preventDefault()
+              navigate('landing', '#models')
+            }}
+          >
+            Models
+          </a>
+          <button
+            type="button"
+            className="btn-primary nav-enter-btn"
+            onClick={() => navigate('config')}
+          >
+            <span>Enter the Arena</span>
+            <IconArrowRight size={15} />
+          </button>
+        </nav>
+
+        <div className="nav-mobile-actions">
+          <button
+            type="button"
+            className="hamburger"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={open}
+          >
+            <IconMenu open={open} size={20} />
+          </button>
         </div>
       </div>
-    </nav>
+    </header>
   )
 }
 
-function Hero({ setView }){
+function Hero({ setView }) {
+  const previewA = models[0] // ChatGPT
+  const previewB = models[2] // Claude
+
   return (
     <section id="home" className="hero">
       <div className="container hero-grid">
-        <div>
-          <div className="badge">● Live Simulated Battles • No API Keys Required</div>
-          <h1 style={{marginTop:14}}>What Happens When <span>AI Challenges AI?</span></h1>
-          <p className="hero-sub">Choose your AI models. Enter your question. Watch them challenge each other's reasoning and work toward one ultimate answer.</p>
+        <div className="hero-copy">
+          <div className="eyebrow">
+            <span className="eyebrow-dot" />
+            <span>DIFFERENT MINDS. ONE ARENA.</span>
+          </div>
+          <h1>What Happens When AI Challenges AI?</h1>
+          <p className="hero-sub">
+            Choose your AI models. Watch them challenge each other's reasoning. Get one consolidated final answer.
+          </p>
           <div className="hero-actions">
-            <button className="btn-primary" onClick={()=>setView('config')}>Enter the Arena →</button>
-            <button className="btn-secondary" onClick={()=>document.querySelector('#how')?.scrollIntoView({behavior:'smooth'})}>How It Works</button>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => setView('config')}
+            >
+              <span>Enter the Arena</span>
+              <IconArrowRight size={16} />
+            </button>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() =>
+                document.querySelector('#how')?.scrollIntoView({ behavior: 'smooth' })
+              }
+            >
+              <span>How It Works</span>
+            </button>
           </div>
-          <div className="hero-stats">
-            <div className="stat"><span style={{width:10,height:10,borderRadius:'50%',background:'var(--cyan)',display:'inline-block', boxShadow:'0 0 10px var(--cyan)'}}></span> <span><strong>4</strong> rounds + synthesis</span></div>
-            <div className="stat">⚡ <span><strong>Shared</strong> timeline, not split chats</span></div>
-            <div className="stat">🏆 <span><strong>1</strong> final answer</span></div>
+          <div className="hero-proto-note">
+            <span className="proto-indicator" aria-hidden="true" />
+            <span>
+              Frontend prototype — simulated multi-model debate using local demonstration data.
+            </span>
           </div>
-          <p style={{marginTop:14, fontSize:12, color:'var(--text-muted)'}}>Simulated experience — responses are mock demonstration data, not live model outputs.</p>
         </div>
 
-        <div className="arena-visual" aria-hidden>
-          <div className="arena-ring">
-            <div className="vs-center">VS</div>
+        <div className="arena-visual" aria-label="AI Debate Arena Architecture">
+          <div className="arena-visual-header">
+            <span className="arena-visual-title">ARENA DEBATE TOPOLOGY</span>
+            <span className="arena-stage-pill">ARGUE → CHALLENGE → SYNTHESIZE</span>
           </div>
-          <div className="fighter left">
-            <div className="fighter-avatar">◉</div>
-            <b>ChatGPT</b>
-            <span>OpenAI • GPT-4o</span>
+
+          <div className="arena-visual-body">
+            {/* Two Distinct Model Cards + Central VS */}
+            <div className="arena-combatants">
+              <div className="arena-fighter-card fighter-a">
+                <div className="arena-fighter-top">
+                  <span className="fighter-slot-tag">FIGHTER 01</span>
+                  <span className="fighter-status-dot active-cyan" />
+                </div>
+                <div className="arena-fighter-main">
+                  <ModelIcon id={previewA.id} color={previewA.color} size={36} />
+                  <div>
+                    <div className="arena-fighter-name">{previewA.name}</div>
+                    <div className="arena-fighter-meta">
+                      {previewA.provider} • {previewA.model}
+                    </div>
+                  </div>
+                </div>
+                <div className="arena-fighter-stance">
+                  <span className="stance-label">OPENING THESIS</span>
+                  <p>Prioritizes foundational readability and cross-domain versatility.</p>
+                </div>
+              </div>
+
+              <div className="arena-vs-column" aria-hidden="true">
+                <div className="arena-vs-line" />
+                <div className="arena-vs-node">VS</div>
+                <div className="arena-vs-line" />
+              </div>
+
+              <div className="arena-fighter-card fighter-b">
+                <div className="arena-fighter-top">
+                  <span className="fighter-slot-tag">FIGHTER 02</span>
+                  <span className="fighter-status-dot active-blue" />
+                </div>
+                <div className="arena-fighter-main">
+                  <ModelIcon id={previewB.id} color={previewB.color} size={36} />
+                  <div>
+                    <div className="arena-fighter-name">{previewB.name}</div>
+                    <div className="arena-fighter-meta">
+                      {previewB.provider} • {previewB.model}
+                    </div>
+                  </div>
+                </div>
+                <div className="arena-fighter-stance">
+                  <span className="stance-label">COUNTER-THESIS</span>
+                  <p>Challenges abstract breadth with immediate execution feedback loops.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* SVG Connection Schematic */}
+            <div className="arena-schematic" aria-hidden="true">
+              <svg className="schematic-svg" viewBox="0 0 400 44" preserveAspectRatio="none">
+                <path
+                  d="M90 2 V18 Q90 26 98 26 H192 Q200 26 200 34 V42"
+                  fill="none"
+                  stroke="#00D9FF"
+                  strokeWidth="1.5"
+                  strokeOpacity="0.65"
+                />
+                <path
+                  d="M310 2 V18 Q310 26 302 26 H208 Q200 26 200 34 V42"
+                  fill="none"
+                  stroke="#4388FF"
+                  strokeWidth="1.5"
+                  strokeOpacity="0.65"
+                />
+                <circle cx="90" cy="4" r="3" fill="#00D9FF" />
+                <circle cx="310" cy="4" r="3" fill="#4388FF" />
+                <circle cx="200" cy="26" r="4" fill="#0E213A" stroke="#00D9FF" strokeWidth="1.5" />
+              </svg>
+              <div className="schematic-rounds">
+                <span>R1: Opening</span>
+                <span>R2: Counter</span>
+                <span>R3: Rebuttal</span>
+                <span>R4: Convergence</span>
+              </div>
+            </div>
+
+            {/* Consolidated Synthesis Output Node */}
+            <div className="arena-synthesis-node">
+              <div className="synthesis-node-head">
+                <span className="synthesis-node-tag">CONSOLIDATED OUTPUT</span>
+                <span className="synthesis-node-meta">4 Rounds Verified in Shared Timeline</span>
+              </div>
+              <p className="synthesis-node-text">
+                One structured conclusion distilled from the strongest surviving arguments of both models.
+              </p>
+            </div>
           </div>
-          <div className="fighter right">
-            <div className="fighter-avatar">⬢</div>
-            <b>Gemini</b>
-            <span>Google • 1.5 Pro</span>
-          </div>
-          <div className="arena-bars"><i style={{height:10}}></i><i></i><i></i><i></i><i style={{height:16}}></i></div>
-          <div style={{position:'absolute', bottom: 54, fontSize:11, color:'var(--text-secondary)', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:700}}>Shared Arena • Chronological Debate</div>
         </div>
       </div>
     </section>
   )
 }
 
-function Landing({ setView }){
+function Landing({ setView }) {
+  const benefits = [
+    {
+      id: 'compare',
+      title: 'Compare Perspectives',
+      desc: 'Two different models examine one question.',
+      icon: <IconCompare size={20} />
+    },
+    {
+      id: 'challenge',
+      title: 'Challenge Arguments',
+      desc: 'A shared timeline shows counterarguments and rebuttals.',
+      icon: <IconChallenge size={20} />
+    },
+    {
+      id: 'synthesize',
+      title: 'Synthesize Insights',
+      desc: 'One consolidated answer presents the strongest useful conclusions.',
+      icon: <IconSynthesize size={20} />
+    }
+  ]
+
+  const processSteps = [
+    {
+      step: '01',
+      label: 'SELECT',
+      desc: 'Choose two AI models.',
+      icon: <IconStepSelect size={18} />
+    },
+    {
+      step: '02',
+      label: 'QUESTION',
+      desc: 'Enter your question.',
+      icon: <IconStepQuestion size={18} />
+    },
+    {
+      step: '03',
+      label: 'BATTLE',
+      desc: 'Follow opening arguments, counterarguments, rebuttals, and final discussion.',
+      icon: <IconStepBattle size={18} />
+    },
+    {
+      step: '04',
+      label: 'SYNTHESIZE',
+      desc: 'Receive one consolidated final answer.',
+      icon: <IconStepAnswer size={18} />
+    }
+  ]
+
   return (
-    <>
-      <Hero setView={setView}/>
-      <section className="features">
+    <main>
+      {/* 2. Hero and arena visualization */}
+      <Hero setView={setView} />
+
+      {/* 3. Three concise product benefits */}
+      <section id="benefits" className="section-benefits">
         <div className="container">
           <div className="section-head">
-            <h2>Three steps to one stronger answer</h2>
-            <p>Pick your fighters, pose your question, and watch a structured debate converge into a single synthesis.</p>
+            <span className="eyebrow">STRUCTURED REASONING</span>
+            <h2>Built for adversarial clarity</h2>
+            <p>
+              Instead of reading isolated responses side by side, watch two distinct models test each other's logic in a single arena.
+            </p>
           </div>
-          <div className="feature-grid">
-            <div className="fcard">
-              <div className="ficon">⬢</div>
-              <h3>Choose Your Models</h3>
-              <p>Select two different AI models. Each has distinct strengths — creativity, reasoning, speed, or depth.</p>
-            </div>
-            <div className="fcard">
-              <div className="ficon">⚔</div>
-              <h3>Watch the AI Battle</h3>
-              <p>Follow arguments, challenges, and rebuttals in one shared timeline — not two disconnected chats.</p>
-            </div>
-            <div className="fcard">
-              <div className="ficon">🏆</div>
-              <h3>Get One Final Answer</h3>
-              <p>Receive one consolidated response based on the strongest insights from the entire debate.</p>
-            </div>
+          <div className="benefit-grid">
+            {benefits.map((b) => (
+              <article key={b.id} className="benefit-card">
+                <div className="benefit-icon">{b.icon}</div>
+                <h3>{b.title}</h3>
+                <p>{b.desc}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="how" className="how">
+      {/* 4. How It Works */}
+      <section id="how" className="section-how">
         <div className="container">
           <div className="section-head">
+            <span className="eyebrow">DEBATE PROTOCOL</span>
             <h2>How It Works</h2>
-            <p>A deliberate, stage-by-stage debate designed for clarity and convergence.</p>
+            <p>
+              A linear four-stage process from model selection to a single synthesized conclusion.
+            </p>
           </div>
-          <div className="steps">
-            <div className="step"><div className="step-num">1</div><b>Select</b><p style={{color:'var(--text-secondary)', fontSize:13, marginTop:6}}>Choose two fighters from the catalog. Duplicate picks are blocked to keep the debate diverse.</p></div>
-            <div className="step"><div className="step-num">2</div><b>Question</b><p style={{color:'var(--text-secondary)', fontSize:13, marginTop:6}}>Ask anything up to 1000 characters. Use example chips to start fast.</p></div>
-            <div className="step"><div className="step-num">3</div><b>Battle</b><p style={{color:'var(--text-secondary)', fontSize:13, marginTop:6}}>4 rounds: openings → counters → rebuttals → final discussion, then synthesis.</p></div>
-            <div className="step"><div className="step-num">4</div><b>Answer</b><p style={{color:'var(--text-secondary)', fontSize:13, marginTop:6}}>One premium card with the synthesized answer, plus insight cards per model.</p></div>
-          </div>
-        </div>
-      </section>
 
-      <section id="models" className="models-preview">
-        <div className="container">
-          <div className="section-head">
-            <h2>Meet the Fighters</h2>
-            <p>Mock model choices for the prototype — no real API calls. Clean, consistent cards with clear selection states.</p>
-          </div>
-          <div className="model-grid-mini">
-            {models.slice(0,4).map(m=>(
-              <div key={m.id} className="mmini">
-                <div className="mmini-icon" style={{background:m.color}}>{m.icon}</div>
-                <div><b style={{fontSize:14}}>{m.name}</b><br/><small style={{color:'var(--text-secondary)', fontSize:12}}>{m.provider} • {m.model}</small></div>
+          <div className="process-timeline" role="list">
+            {processSteps.map((item, idx) => (
+              <div key={item.label} className="process-step" role="listitem">
+                <div className="process-step-rail">
+                  <div className="process-step-node">
+                    {item.icon}
+                  </div>
+                  {idx < processSteps.length - 1 && (
+                    <div className="process-step-connector" aria-hidden="true" />
+                  )}
+                </div>
+                <div className="process-step-content">
+                  <div className="process-step-meta">
+                    <span className="process-step-num">STAGE {item.step}</span>
+                  </div>
+                  <h3 className="process-step-title">{item.label}</h3>
+                  <p className="process-step-desc">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
-          <div style={{textAlign:'center', marginTop:18}}>
-            <button className="btn-primary" onClick={()=>setView('config')}>Enter the Arena →</button>
+        </div>
+      </section>
+
+      {/* 5. Compact Model Showcase */}
+      <section id="models" className="section-models-showcase">
+        <div className="container">
+          <div className="showcase-header">
+            <div>
+              <span className="eyebrow">MODEL ROSTER</span>
+              <h2>Available Arena Models</h2>
+              <p>
+                Six frontier model profiles available for simulated head-to-head debates.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => setView('config')}
+            >
+              <span>Configure Matchup</span>
+              <IconArrowRight size={15} />
+            </button>
+          </div>
+
+          <div className="showcase-grid">
+            {models.map((m) => (
+              <div key={m.id} className="showcase-item">
+                <ModelIcon id={m.id} color={m.color} size={36} />
+                <div className="showcase-item-body">
+                  <div className="showcase-item-top">
+                    <strong>{m.name}</strong>
+                    <span>{m.provider} • {m.model}</span>
+                  </div>
+                  <p>{m.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="about" className="about">
-        <div className="container about-grid">
-          <div>
-            <h2 style={{fontFamily:'Space Grotesk', fontSize:28, fontWeight:800}}>About SANGRAM AI</h2>
-            <p style={{color:'var(--text-secondary)', marginTop:10, lineHeight:1.7}}>Sangram means battle — a premium, futuristic arena where different AI minds challenge each other to produce one stronger answer. The experience is deliberately shared: one chronological timeline, clear round structure, and a single synthesis. Built as a frontend prototype with mock data, ready for real model orchestration later.</p>
-            <div style={{display:'flex', gap:10, marginTop:16, flexWrap:'wrap'}}>
-              <span className="badge">Frontend-only</span>
-              <span className="badge" style={{background:'rgba(66,133,255,0.15)', borderColor:'rgba(66,133,255,0.25)', color:'#8AB4F8'}}>API-Ready Architecture</span>
+      {/* 6. Final Call-to-Action */}
+      <section className="section-final-cta">
+        <div className="container">
+          <div className="cta-surface">
+            <div className="cta-copy">
+              <span className="eyebrow">
+                <span className="eyebrow-dot" />
+                <span>SANGRAM AI — DIFFERENT MINDS. ONE ARENA.</span>
+              </span>
+              <h2>Ready to put two AI perspectives to the test?</h2>
+              <p>
+                Select two models, enter your question, and review the full four-round debate alongside one synthesized answer.
+              </p>
             </div>
-          </div>
-          <div className="about-card">
-            <h4 style={{fontSize:14, letterSpacing:'0.06em', textTransform:'uppercase', color:'var(--cyan)'}}>Vision</h4>
-            <p style={{marginTop:8, color:'var(--text-secondary)', lineHeight:1.7}}>Different Minds. One Arena. Two models debate, scrutinize, and refine — synthesis distills the strongest insights into a single, readable final answer. No split screens, no duplicated answers — just one converging battle.</p>
-            <div style={{marginTop:14, display:'flex', gap:8, flexWrap:'wrap'}}>
-              <span className="chip">Glassmorphism</span><span className="chip">Cyan lighting</span><span className="chip">Responsive</span><span className="chip">Accessible</span>
+            <div className="cta-actions">
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setView('config')}
+              >
+                <span>Enter the Arena</span>
+                <IconArrowRight size={16} />
+              </button>
             </div>
           </div>
         </div>
       </section>
 
+      {/* 7. Footer */}
       <footer className="footer">
         <div className="container footer-inner">
-          <span>© {new Date().getFullYear()} SANGRAM AI — Different Minds. One Arena. Simulated battles for demonstration.</span>
-          <span style={{display:'flex', gap:12}}><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></span>
+          <div className="footer-brand-col">
+            <BrandLogo showTagline size="sm" />
+            <p className="footer-note">
+              Frontend prototype using deterministic local simulation data. No live external model APIs are connected.
+            </p>
+          </div>
+          <div className="footer-links">
+            <a
+              href="#benefits"
+              onClick={(e) => {
+                e.preventDefault()
+                document.querySelector('#benefits')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              Benefits
+            </a>
+            <a
+              href="#how"
+              onClick={(e) => {
+                e.preventDefault()
+                document.querySelector('#how')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              How It Works
+            </a>
+            <a
+              href="#models"
+              onClick={(e) => {
+                e.preventDefault()
+                document.querySelector('#models')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              Models
+            </a>
+            <button
+              type="button"
+              className="footer-link-btn"
+              onClick={() => {
+                setView('config')
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+            >
+              Enter the Arena
+            </button>
+          </div>
         </div>
       </footer>
-    </>
+    </main>
   )
 }
 
-function Config({ selected, setSelected, question, setQuestion, setView, setBattleData, setStatus }){
-  const [error, setError] = useState("")
+function Config({
+  selected,
+  setSelected,
+  question,
+  setQuestion,
+  setView,
+  setBattleData,
+  setStatus
+}) {
+  const [error, setError] = useState('')
+  const [activeSlot, setActiveSlot] = useState(() => {
+    if (!selected[0]) return 0
+    if (!selected[1]) return 1
+    return 0
+  })
   const maxLen = 1000
+  const minLen = 10
 
-  const selectModel = (model, slotIdx) => {
-    setError("")
-    const otherIdx = slotIdx === 0 ? 1 : 0
-    if(selected[otherIdx]?.id === model.id){
-      setError(`“${model.name}” is already selected in the other slot. Choose a different model.`)
+  const selectModelForSlot = (model, targetSlot) => {
+    const otherSlot = targetSlot === 0 ? 1 : 0
+    if (selected[otherSlot]?.id === model.id) {
+      setError(
+        `${model.name} is already assigned to Fighter 0${otherSlot + 1}. Please select two different models.`
+      )
       return
     }
+    setError('')
     const next = [...selected]
-    next[slotIdx] = model
+    next[targetSlot] = model
     setSelected(next)
+
+    // Advance activeSlot automatically to the remaining empty slot if any
+    if (targetSlot === 0 && !next[1]) {
+      setActiveSlot(1)
+    } else if (targetSlot === 1 && !next[0]) {
+      setActiveSlot(0)
+    }
   }
-  const clearSlot = (idx) => {
-    const next = [...selected]; next[idx]=null; setSelected(next); setError("")
+
+  const handleCatalogClick = (model) => {
+    const inSlot0 = selected[0]?.id === model.id
+    const inSlot1 = selected[1]?.id === model.id
+
+    // If clicked model is already in one of the slots, prevent duplicate assignment
+    if (inSlot0 || inSlot1) {
+      const existingSlotNumber = inSlot0 ? '01' : '02'
+      setError(
+        `${model.name} is already selected as Fighter ${existingSlotNumber}. Choose a different model for the opposing slot, or click "Change" on Fighter ${existingSlotNumber}.`
+      )
+      return
+    }
+
+    // Determine which slot to populate
+    if (!selected[0]) {
+      selectModelForSlot(model, 0)
+    } else if (!selected[1]) {
+      selectModelForSlot(model, 1)
+    } else {
+      selectModelForSlot(model, activeSlot)
+    }
   }
-  const canStart = selected[0] && selected[1] && question.trim().length >= 10 && question.length <= maxLen
+
+  const handleClearOrChangeSlot = (slotIdx) => {
+    setError('')
+    const next = [...selected]
+    next[slotIdx] = null
+    setSelected(next)
+    setActiveSlot(slotIdx)
+  }
+
+  const trimmedLen = question.trim().length
+  const modelsReady = Boolean(selected[0] && selected[1] && selected[0].id !== selected[1].id)
+  const questionReady = trimmedLen >= minLen && question.length <= maxLen
+  const canStart = modelsReady && questionReady
 
   const start = () => {
-    if(!canStart) return
-    const data = generateBattle(selected, question)
+    if (!canStart) return
+    const data = generateBattle(selected, question.trim())
     setBattleData(data)
     setStatus('ready')
     setView('arena')
   }
 
   return (
-    <div className="container config-wrap">
+    <main className="container config-wrap">
       <div className="config-head">
-        <div className="badge">Step 1 of 2 • Configuration</div>
-        <h1 style={{marginTop:10}}>Choose Your AI Fighters</h1>
-        <p>Choose two AI models to enter the arena.</p>
-        {error && <div className="error-msg" style={{marginTop:12}}>{error}</div>}
+        <span className="eyebrow">MATCHUP CONFIGURATION</span>
+        <h1>Choose Your Fighters</h1>
+        <p>Two models. Different perspectives. One arena.</p>
       </div>
 
-         <div className="slots">
-        {/* Slot 1 */}
-        <div className={`slot ${selected[0]?'selected':''}`}>
-          <div className="slot-head">
-            <h3>Slot 1 {selected[0]?'• Ready':''}</h3>
-            {selected[0] && <button className="btn-ghost" onClick={()=>clearSlot(0)}>Change</button>}
-          </div>
-          {!selected[0] ? (
-            <div className="slot-empty">
-              <div>
-                <div style={{fontSize:22, marginBottom:6}}>⬡</div>
-                <div style={{fontWeight:700, color:'var(--text-primary)'}}>No fighter selected</div>
-                <div style={{fontSize:12, marginTop:4}}>Pick a model from the catalog below</div>
+      {/* Desktop layout: FIGHTER 01 — VS — FIGHTER 02 */}
+      <section className="slots-section" aria-label="Selected fighters">
+        <div className="slots">
+          {/* Fighter 01 */}
+          <div
+            className={`slot ${selected[0] ? 'selected' : 'empty'} ${
+              activeSlot === 0 && !selected[0] ? 'slot-targeted' : ''
+            }`}
+            onClick={() => {
+              if (!selected[0]) setActiveSlot(0)
+            }}
+          >
+            <div className="slot-head">
+              <div className="slot-title-group">
+                <span className="slot-label">FIGHTER 01</span>
+                <span className={`slot-state-badge ${selected[0] ? 'is-ready' : ''}`}>
+                  {selected[0] ? 'Selected' : 'Awaiting Selection'}
+                </span>
               </div>
+              {selected[0] && (
+                <button
+                  type="button"
+                  className="btn-ghost slot-change-btn"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleClearOrChangeSlot(0)
+                  }}
+                >
+                  Change
+                </button>
+              )}
             </div>
-          ) : (
-            <div className="slot-chosen">
-              <div className="slot-chosen-icon" style={{background: selected[0].color}}>{selected[0].icon}</div>
-              <div style={{flex:1}}>
-                <b style={{fontSize:15}}>{selected[0].name}</b> <small style={{color:'var(--text-secondary)'}}>• {selected[0].provider}</small>
-                <div style={{fontSize:12, color:'var(--text-secondary)', marginTop:2}}>{selected[0].model}</div>
-              </div>
-            </div>
-          )}
-        </div>
 
-        <div className="vs-col">
-          <div className="vs-badge">VS</div>
-          <small style={{color:'var(--text-muted)', fontWeight:700, letterSpacing:'0.08em', textTransform:'uppercase'}}>Best of 4 Rounds</small>
-        </div>
-
-        {/* Slot 2 */}
-        <div className={`slot ${selected[1]?'selected':''}`}>
-          <div className="slot-head">
-            <h3>Slot 2 {selected[1]?'• Ready':''}</h3>
-            {selected[1] && <button className="btn-ghost" onClick={()=>clearSlot(1)}>Change</button>}
-          </div>
-          {!selected[1] ? (
-            <div className="slot-empty">
-              <div>
-                <div style={{fontSize:22, marginBottom:6}}>⬡</div>
-                <div style={{fontWeight:700, color:'var(--text-primary)'}}>No fighter selected</div>
-                <div style={{fontSize:12, marginTop:4}}>Pick a model from the catalog below</div>
-              </div>
-            </div>
-          ) : (
-            <div className="slot-chosen">
-              <div className="slot-chosen-icon" style={{background: selected[1].color}}>{selected[1].icon}</div>
-              <div style={{flex:1}}>
-                <b style={{fontSize:15}}>{selected[1].name}</b> <small style={{color:'var(--text-secondary)'}}>• {selected[1].provider}</small>
-                <div style={{fontSize:12, color:'var(--text-secondary)', marginTop:2}}>{selected[1].model}</div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="catalog">
-        <h4>Model Catalog — Click to select (simulated, no API)</h4>
-        <div className="catalog-grid">
-          {models.map(m=>{
-            const isSelected = selected[0]?.id===m.id || selected[1]?.id===m.id
-            const isInOtherSlot = selected.some(s=>s?.id===m.id)
-            return (
-              <div key={m.id}
-                className={`mcard ${isSelected?'selected':''} ${isInOtherSlot && !isSelected?'disabled':''}`}
-                onClick={()=>{
-                  // pick first empty slot, else slot 1
-                  if(isSelected) return
-                  if(!selected[0]) selectModel(m,0)
-                  else if(!selected[1]) selectModel(m,1)
-                  else selectModel(m,1) // replace second
-                }}
-                role="button" tabIndex={0}
-                onKeyDown={(e)=>{if(e.key==='Enter') { e.preventDefault(); if(!selected[0]) selectModel(m,0); else if(!selected[1]) selectModel(m,1)}}}
-                aria-label={`Select ${m.name} by ${m.provider}`}
-              >
-                {isSelected && <div className="check">✓</div>}
-                <div className="mcard-top">
-                  <div className="mcard-icon" style={{background:m.color}}>{m.icon}</div>
-                  <div><h5>{m.name}</h5><small>{m.provider} • {m.model}</small></div>
+            {!selected[0] ? (
+              <div className="slot-empty">
+                <div className="slot-empty-icon">
+                  <IconStepSelect size={18} />
                 </div>
-                <p>{m.desc}</p>
+                <div className="slot-empty-text">
+                  <strong>Select first model</strong>
+                  <span>Choose a fighter from the model catalog below</span>
+                </div>
+              </div>
+            ) : (
+              <div className="slot-chosen">
+                <ModelIcon id={selected[0].id} color={selected[0].color} size={42} />
+                <div className="slot-chosen-info">
+                  <div className="slot-chosen-name">{selected[0].name}</div>
+                  <div className="slot-chosen-meta">
+                    {selected[0].provider} • {selected[0].model}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Central VS */}
+          <div className="vs-col" aria-hidden="true">
+            <div className="vs-badge">VS</div>
+          </div>
+
+          {/* Fighter 02 */}
+          <div
+            className={`slot ${selected[1] ? 'selected' : 'empty'} ${
+              activeSlot === 1 && !selected[1] ? 'slot-targeted' : ''
+            }`}
+            onClick={() => {
+              if (!selected[1]) setActiveSlot(1)
+            }}
+          >
+            <div className="slot-head">
+              <div className="slot-title-group">
+                <span className="slot-label">FIGHTER 02</span>
+                <span className={`slot-state-badge ${selected[1] ? 'is-ready' : ''}`}>
+                  {selected[1] ? 'Selected' : 'Awaiting Selection'}
+                </span>
+              </div>
+              {selected[1] && (
+                <button
+                  type="button"
+                  className="btn-ghost slot-change-btn"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleClearOrChangeSlot(1)
+                  }}
+                >
+                  Change
+                </button>
+              )}
+            </div>
+
+            {!selected[1] ? (
+              <div className="slot-empty">
+                <div className="slot-empty-icon">
+                  <IconStepSelect size={18} />
+                </div>
+                <div className="slot-empty-text">
+                  <strong>Select second model</strong>
+                  <span>Choose a different fighter from the catalog below</span>
+                </div>
+              </div>
+            ) : (
+              <div className="slot-chosen">
+                <ModelIcon id={selected[1].id} color={selected[1].color} size={42} />
+                <div className="slot-chosen-info">
+                  <div className="slot-chosen-name">{selected[1].name}</div>
+                  <div className="slot-chosen-meta">
+                    {selected[1].provider} • {selected[1].model}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {error && (
+          <div className="error-msg" role="alert">
+            <span>{error}</span>
+          </div>
+        )}
+      </section>
+
+      {/* Model Catalog */}
+      <section className="catalog" aria-label="Model Catalog">
+        <div className="catalog-header">
+          <h4>Model Catalog</h4>
+          <span className="catalog-note">
+            Select two distinct models • Local mock profiles
+          </span>
+        </div>
+
+        <div className="catalog-grid">
+          {models.map((m) => {
+            const isFighter1 = selected[0]?.id === m.id
+            const isFighter2 = selected[1]?.id === m.id
+            const isSelected = isFighter1 || isFighter2
+            const assignedLabel = isFighter1
+              ? 'FIGHTER 01'
+              : isFighter2
+              ? 'FIGHTER 02'
+              : null
+
+            return (
+              <div
+                key={m.id}
+                className={`mcard ${isSelected ? 'selected' : ''}`}
+                onClick={() => handleCatalogClick(m)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleCatalogClick(m)
+                  }
+                }}
+                aria-pressed={isSelected}
+                aria-label={`${m.name} by ${m.provider} (${m.model})${
+                  assignedLabel ? ` — Selected as ${assignedLabel}` : ''
+                }`}
+              >
+                <div className="mcard-top">
+                  <ModelIcon id={m.id} color={m.color} size={40} />
+                  <div className="mcard-title-wrap">
+                    <h5>{m.name}</h5>
+                    <small>
+                      {m.provider} • {m.model}
+                    </small>
+                  </div>
+                </div>
+
+                <p className="mcard-desc">{m.desc}</p>
+
+                <div className="mcard-footer">
+                  {isSelected ? (
+                    <span className="mcard-status selected-status">
+                      <IconCheck size={13} />
+                      <span>Selected • {assignedLabel}</span>
+                    </span>
+                  ) : (
+                    <span className="mcard-status">
+                      <span>
+                        Assign to{' '}
+                        {!selected[0]
+                          ? 'Fighter 01'
+                          : !selected[1]
+                          ? 'Fighter 02'
+                          : `Fighter 0${activeSlot + 1}`}
+                      </span>
+                      <IconArrowRight size={13} />
+                    </span>
+                  )}
+                </div>
               </div>
             )
           })}
         </div>
-      </div>
+      </section>
 
-      <div className="question-section">
-        <h3>What Should They Battle Over?</h3>
-        <p>Your question drives the debate. Be specific for a tighter synthesis.</p>
+      {/* Question Configuration */}
+      <section className="question-section" aria-label="Debate Question">
+        <div className="question-head">
+          <div>
+            <h3>Enter Your Question</h3>
+            <p>
+              Provide a technical, architectural, or strategic question for the two models to debate.
+            </p>
+          </div>
+          <span className="question-req">Min {minLen} characters</span>
+        </div>
+
         <div className="textarea-wrap">
           <textarea
             value={question}
-            onChange={e=>setQuestion(e.target.value.slice(0,maxLen))}
-            placeholder="Ask anything. Let the AI models challenge each other's reasoning..."
+            onChange={(e) => setQuestion(e.target.value.slice(0, maxLen))}
+            placeholder="Ask a question for both AI models to examine, challenge, and synthesize..."
             maxLength={maxLen}
             aria-label="Battle question"
           />
-          <div className={`counter ${question.length>800?'warn':''} ${question.length>=maxLen?'error':''}`}>{question.length} / {maxLen}</div>
-        </div>
-        <div className="chips">
-          {examplePrompts.map(p=>(
-            <button key={p} className="chip" onClick={()=>setQuestion(p)}>{p}</button>
-          ))}
-        </div>
-        <div className="start-bar">
-          <div className="hint">
-            {question.trim().length>0 && question.trim().length<10 && <span style={{color:'#FF8A80'}}>Question too short — add a bit more detail (min 10 chars)</span>}
-            {question.trim().length>=10 && <span style={{color:'#4ADE80'}}>✓ Ready to battle</span>}
-            {question.trim().length===0 && <span>Enter a question to enable Start Battle</span>}
+          <div
+            className={`counter ${question.length > 850 ? 'warn' : ''} ${
+              question.length >= maxLen ? 'error' : ''
+            }`}
+          >
+            {question.length} / {maxLen}
           </div>
-          <button className="btn-primary" disabled={!canStart} onClick={start} aria-disabled={!canStart}>
-            Start Battle → {!canStart && <span style={{opacity:0.7, fontWeight:500, fontSize:12}}>({!selected[0]||!selected[1] ? 'select 2 models' : question.trim().length<10 ? 'question too short' : 'ready'})</span>}
+        </div>
+
+        <div className="chips-row">
+          <span className="chips-label">Example questions:</span>
+          <div className="chips">
+            {examplePrompts.map((p) => (
+              <button
+                type="button"
+                key={p}
+                className={`chip ${question === p ? 'active' : ''}`}
+                onClick={() => setQuestion(p)}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="start-bar">
+          <div className="validation-status" aria-live="polite">
+            {!modelsReady && (
+              <span className="val-msg">
+                Select two different models above ({(selected[0] ? 1 : 0) + (selected[1] ? 1 : 0)} of 2 selected).
+              </span>
+            )}
+            {modelsReady && trimmedLen === 0 && (
+              <span className="val-msg">
+                Enter a question (at least {minLen} characters) to start the battle.
+              </span>
+            )}
+            {modelsReady && trimmedLen > 0 && trimmedLen < minLen && (
+              <span className="val-msg val-warn">
+                Question is too short — add {minLen - trimmedLen} more character{minLen - trimmedLen === 1 ? '' : 's'}.
+              </span>
+            )}
+            {canStart && (
+              <span className="val-msg val-ok">
+                <IconCheck size={14} />
+                <span>
+                  Ready: {selected[0].name} vs {selected[1].name}
+                </span>
+              </span>
+            )}
+          </div>
+
+          <button
+            type="button"
+            className="btn-primary start-battle-btn"
+            disabled={!canStart}
+            onClick={start}
+            aria-disabled={!canStart}
+          >
+            <span>Start Battle</span>
+            <IconArrowRight size={16} />
           </button>
         </div>
-        <div className="sim-badge">◉ Simulated battle • Demonstration data only</div>
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }
 
-function Arena({ selected, question, battleData, view, setView, setFinalAnswer, setInsightsState, onReset }){
+function Arena({
+  selected,
+  question,
+  battleData,
+  setView,
+  setFinalAnswer,
+  setInsightsState,
+  onReset
+}) {
   const [revealed, setRevealed] = useState([])
   const [stageIdx, setStageIdx] = useState(0)
   const [typing, setTyping] = useState(false)
-  const [status, setStatus] = useState('running') // running, synthesizing, completed
+  const [status, setStatus] = useState('running') // running | synthesizing | completed
   const listRef = useRef(null)
   const timersRef = useRef([])
 
-  // init battle simulation
-  useEffect(()=>{
-    if(!battleData) return
+  useEffect(() => {
+    if (!battleData) return
     setRevealed([])
     setStageIdx(0)
     setTyping(true)
@@ -379,60 +883,54 @@ function Arena({ selected, question, battleData, view, setView, setFinalAnswer, 
     let idx = 0
     const total = battleData.messages.length
 
-    function scheduleNext(){
-      if(idx >= total){
+    function scheduleNext() {
+      if (idx >= total) {
         setTyping(true)
         setStageIdx(4) // synthesis
         setStatus('synthesizing')
-        const t = setTimeout(()=>{
+        const t = setTimeout(() => {
           setStatus('completed')
           setTyping(false)
-          // store final answer for results view
           setFinalAnswer(battleData.finalAnswer)
           setInsightsState(battleData.insights)
-          // auto navigate to results after short pause
-          setTimeout(()=> setView('results'), 900)
-        }, 1800)
+          setTimeout(() => setView('results'), 900)
+        }, 1600)
         timersRef.current.push(t)
         return
       }
       const msg = battleData.messages[idx]
-      const delay = 1200 + Math.random()*700
-      const t = setTimeout(()=>{
-        setRevealed(prev=>[...prev, msg])
-        setStageIdx(msg.round -1)
-        if(msg.round>4) setStageIdx(3)
-        // small typing gap
+      const delay = 1100 + Math.random() * 550
+      const t = setTimeout(() => {
+        setRevealed((prev) => [...prev, msg])
+        setStageIdx(Math.min(msg.round - 1, 3))
         setTyping(true)
         idx++
-        // update stage indicator: if next msg is new round, flash
         scheduleNext()
       }, delay)
       timersRef.current.push(t)
-      // show typing false briefly between? keep true for simplicity but toggle
       setTyping(false)
-      const t2 = setTimeout(()=>setTyping(true), delay - 300)
+      const t2 = setTimeout(() => setTyping(true), delay - 280)
       timersRef.current.push(t2)
     }
 
     scheduleNext()
 
-    return ()=>{
+    return () => {
       timersRef.current.forEach(clearTimeout)
-      timersRef.current=[]
+      timersRef.current = []
     }
-  }, [battleData])
+  }, [battleData, setFinalAnswer, setInsightsState, setView])
 
-  useEffect(()=>{
-    if(listRef.current){
+  useEffect(() => {
+    if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight
     }
-  }, [revealed, typing])
+  }, [revealed, typing, status])
 
   const skip = () => {
     timersRef.current.forEach(clearTimeout)
-    timersRef.current=[]
-    if(battleData){
+    timersRef.current = []
+    if (battleData) {
       setRevealed(battleData.messages)
       setStageIdx(4)
       setStatus('completed')
@@ -443,131 +941,349 @@ function Arena({ selected, question, battleData, view, setView, setFinalAnswer, 
     }
   }
 
-  const progressLabel = status==='synthesizing' ? 'Synthesizing...' : status==='completed' ? 'Completed' : 'Live'
+  if (!selected[0] || !selected[1] || !battleData) {
+    return (
+      <main className="container arena-empty-fallback">
+        <div className="fallback-card">
+          <h2>No Active Matchup</h2>
+          <p>Select two AI models and enter a question to begin a debate.</p>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => setView('config')}
+          >
+            Configure Matchup
+          </button>
+        </div>
+      </main>
+    )
+  }
 
-  if(!selected[0] || !selected[1]) return <div className="container" style={{padding:40}}>Missing models. <button className="btn-primary" onClick={()=>setView('config')}>Go to config</button></div>
-  if(!battleData) return <div className="container" style={{padding:40}}>No battle data. <button className="btn-primary" onClick={()=>setView('config')}>Configure</button></div>
+  const nextPendingMsg = battleData.messages[revealed.length]
+  const activeSpeakerId =
+    status === 'running' && nextPendingMsg ? nextPendingMsg.speaker : null
+
+  const currentStage = stages[stageIdx] || stages[0]
 
   return (
-    <div className="container arena-page">
-      <div className="arena-header">
-        <div className="arena-models">
-          <div className="arena-model"><i style={{background:selected[0].color}}>{selected[0].icon}</i><b style={{fontSize:13}}>{selected[0].name}</b> <small style={{color:'var(--text-secondary)', fontSize:11}}>{selected[0].provider}</small></div>
-          <div className="arena-vs">VS</div>
-          <div className="arena-model"><i style={{background:selected[1].color}}>{selected[1].icon}</i><b style={{fontSize:13}}>{selected[1].name}</b> <small style={{color:'var(--text-secondary)', fontSize:11}}>{selected[1].provider}</small></div>
-          <span className="live" style={{marginLeft:8}}>{progressLabel}</span>
+    <main className="container arena-page">
+      {/* Arena Header: Competing Models, Active Round, Controls, and Question */}
+      <section className="arena-header" aria-label="Debate Matchup Header">
+        <div className="arena-header-top">
+          <div className="arena-models">
+            <div
+              className={`arena-model fighter-chip-a ${
+                activeSpeakerId === 'A' ? 'speaking' : ''
+              }`}
+            >
+              <ModelIcon id={selected[0].id} color={selected[0].color} size={30} />
+              <div className="arena-model-text">
+                <span className="arena-fighter-tag">FIGHTER 01</span>
+                <strong>{selected[0].name}</strong>
+                <small>{selected[0].provider}</small>
+              </div>
+            </div>
+
+            <div className="arena-vs" aria-hidden="true">
+              VS
+            </div>
+
+            <div
+              className={`arena-model fighter-chip-b ${
+                activeSpeakerId === 'B' ? 'speaking' : ''
+              }`}
+            >
+              <ModelIcon id={selected[1].id} color={selected[1].color} size={30} />
+              <div className="arena-model-text">
+                <span className="arena-fighter-tag">FIGHTER 02</span>
+                <strong>{selected[1].name}</strong>
+                <small>{selected[1].provider}</small>
+              </div>
+            </div>
+          </div>
+
+          <div className="arena-header-controls">
+            <div className="arena-stage-status">
+              <span
+                className={`status-dot ${
+                  status === 'completed'
+                    ? 'done'
+                    : status === 'synthesizing'
+                    ? 'synth'
+                    : 'live'
+                }`}
+              />
+              <span>
+                {status === 'synthesizing'
+                  ? 'Stage 5 of 5 • Synthesizing'
+                  : status === 'completed'
+                  ? 'Debate Complete'
+                  : `Round ${Math.min(stageIdx + 1, 4)} of 4 • ${currentStage.label}`}
+              </span>
+            </div>
+            <button type="button" className="btn-ghost" onClick={skip}>
+              Skip to Results
+            </button>
+            <button type="button" className="btn-ghost" onClick={onReset}>
+              Exit Arena
+            </button>
+          </div>
         </div>
-        <div style={{display:'flex', gap:8, alignItems:'center'}}>
-          <span style={{fontSize:12, color:'var(--text-secondary)', fontWeight:600}}>Round {Math.min(stageIdx+1,5)} of 5</span>
-          <button className="btn-ghost" onClick={skip}>Skip to Results →</button>
-          <button className="btn-ghost" onClick={onReset}>Exit Arena</button>
+
+        <div className="arena-question-bar">
+          <span className="question-bar-label">DEBATE QUESTION</span>
+          <p className="question-bar-text">{question}</p>
+          <span className="question-bar-tag">Simulated Debate</span>
         </div>
-        <div className="arena-question"><b style={{color:'var(--cyan)'}}>Battle Question:</b> “{question}” <span style={{marginLeft:8, background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.22)', color:'#FFD54F', padding:'2px 8px', borderRadius:999, fontSize:10, fontWeight:700}}>SIMULATED</span></div>
-      </div>
+      </section>
 
       <div className="arena-layout">
-        <aside className="progress-card">
-          <h4>Battle Progress</h4>
-          <div className="stage-list">
-            {stages.map((s,i)=>(
-              <div key={s.id} className={`stage ${i===stageIdx?'active':''} ${i<stageIdx?'done':''}`}>
-                <i>{i<stageIdx?'✓':i+1}</i>
-                <div><b>{s.label}</b><span>{i===4?'Consolidated answer':`Round ${s.round}`}</span></div>
-              </div>
-            ))}
+        {/* Progress Sidebar / Mobile Stepper */}
+        <aside className="progress-card" aria-label="Battle Progress">
+          <div className="progress-card-head">
+            <h4>Debate Stages</h4>
+            <span>{Math.min(stageIdx + 1, 5)} / 5</span>
           </div>
-          <div className="mobile-stepper" aria-label="progress">
-            {stages.map((s,i)=>(
-              <div key={s.id} className={`mstep ${i===stageIdx?'active':''} ${i<stageIdx?'done':''}`}>{i<stageIdx?'✓':i+1} {s.label}</div>
-            ))}
-          </div>
-          <div style={{marginTop:12, background:'rgba(7,20,38,0.8)', border:'1px solid var(--border)', borderRadius:10, padding:'10px 12px', fontSize:12, color:'var(--text-secondary)'}}>
-            <b style={{color:'var(--text-primary)', fontSize:12}}>Shared Timeline</b><br/>Both models respond to each other chronologically — not two separate chats.
-          </div>
-        </aside>
 
-        <div className="timeline">
-          <div className="timeline-head">
-            <h3>Shared Debate Timeline</h3>
-            <span style={{fontSize:11, color:'var(--text-muted)', display:'flex', gap:8, alignItems:'center'}}>
-              <span style={{width:8,height:8, borderRadius:'50%', background: status==='completed'?'#4ADE80':'#00D9FF', display:'inline-block'}}></span>
-              {status==='completed'?'Battle Complete': status==='synthesizing'?'Synthesizing Final Answer…':'Live Debate — Messages appear chronologically'}
-            </span>
-          </div>
-          <div className="timeline-list" ref={listRef}>
-            {revealed.map(m=>{
-              const isA = m.speaker==='A'
+          <div className="stage-list">
+            {stages.map((s, i) => {
+              const isActive = i === stageIdx
+              const isDone = i < stageIdx || status === 'completed'
               return (
-                <div key={m.id} className="msg">
-                  <div className="msg-avatar" style={{background: m.color}}>{m.icon}</div>
-                  <div className={`msg-body ${isA?'ownA':'ownB'}`}>
-                    <div className="msg-meta">
-                      <b>{m.modelName}</b> <small>Round {m.round}</small> <em>• {m.timestamp}</em>
-                      <span style={{marginLeft:'auto', fontSize:10, color:'var(--text-muted)', fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase'}}>{m.provider}</span>
-                    </div>
-                    <p>{m.text}</p>
-                    {m.addressing && <div className="reply">↳ Addressing: {m.addressing}</div>}
+                <div
+                  key={s.id}
+                  className={`stage ${isActive ? 'active' : ''} ${
+                    isDone ? 'done' : ''
+                  }`}
+                >
+                  <div className="stage-index">
+                    {isDone ? <IconCheck size={12} /> : `0${i + 1}`}
+                  </div>
+                  <div className="stage-info">
+                    <b>{s.label}</b>
+                    <span>
+                      {i === 4 ? 'Final Conclusion' : `Round 0${s.round}`}
+                    </span>
                   </div>
                 </div>
               )
             })}
-            {(typing && status!=='completed') && (
-              <div className="typing" aria-live="polite">
-                <i></i><i></i><i></i>
-                <span style={{marginLeft:6}}>
-                  {status==='synthesizing' ? 'Synthesizing final answer from strongest insights...' : `${battleData.messages[revealed.length]?.modelName || selected[0].name} is preparing a response...`}
+          </div>
+
+          <div className="mobile-stepper" aria-label="Debate stages">
+            {stages.map((s, i) => {
+              const isActive = i === stageIdx
+              const isDone = i < stageIdx || status === 'completed'
+              return (
+                <div
+                  key={s.id}
+                  className={`mstep ${isActive ? 'active' : ''} ${
+                    isDone ? 'done' : ''
+                  }`}
+                >
+                  <span>{isDone ? <IconCheck size={11} /> : `0${i + 1}`}</span>
+                  <span>{s.label}</span>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="progress-legend">
+            <div className="legend-title">Shared Timeline</div>
+            <p>
+              Arguments unfold chronologically in one arena so every counterargument directly addresses the opposing model's prior point.
+            </p>
+          </div>
+        </aside>
+
+        {/* Chronological Shared Debate Timeline */}
+        <section className="timeline" aria-label="Shared Debate Timeline">
+          <div className="timeline-head">
+            <div>
+              <h3>Shared Debate Timeline</h3>
+              <p className="timeline-sub">
+                Chronological exchange • {revealed.length} of {battleData.messages.length} arguments recorded
+              </p>
+            </div>
+            <div className="timeline-live-indicator">
+              <span
+                className={`status-dot ${
+                  status === 'completed' ? 'done' : 'live'
+                }`}
+              />
+              <span>
+                {status === 'completed'
+                  ? 'All rounds complete'
+                  : status === 'synthesizing'
+                  ? 'Synthesizing final answer...'
+                  : nextPendingMsg
+                  ? `Speaking: ${nextPendingMsg.modelName}`
+                  : 'Debate in progress'}
+              </span>
+            </div>
+          </div>
+
+          <div className="timeline-list" ref={listRef}>
+            {revealed.map((m, idx) => {
+              const isA = m.speaker === 'A'
+              const prevMsg = idx > 0 ? revealed[idx - 1] : null
+              const isNewRound = !prevMsg || prevMsg.round !== m.round
+              const stageInfo = stages.find((s) => s.round === m.round)
+
+              return (
+                <div key={m.id} className="timeline-item-group">
+                  {isNewRound && (
+                    <div className="round-divider">
+                      <span className="round-divider-num">
+                        ROUND 0{m.round}
+                      </span>
+                      <span className="round-divider-label">
+                        {stageInfo?.label || `Round ${m.round}`}
+                      </span>
+                      <span className="round-divider-line" />
+                    </div>
+                  )}
+
+                  <article
+                    className={`msg round-type-${m.round} ${
+                      isA ? 'speaker-a' : 'speaker-b'
+                    }`}
+                  >
+                    <div className="msg-sidebar">
+                      <ModelIcon id={m.modelId} color={m.color} size={34} />
+                      <div className="msg-vertical-line" />
+                    </div>
+
+                    <div className="msg-content">
+                      <header className="msg-meta">
+                        <span className="msg-fighter-badge">
+                          {isA ? 'FIGHTER 01' : 'FIGHTER 02'}
+                        </span>
+                        <strong className="msg-model-name">{m.modelName}</strong>
+                        <span className="msg-provider">{m.provider}</span>
+                        <span className="msg-stage-tag">
+                          {m.stageLabel || `Round ${m.round}`}
+                        </span>
+                        <time className="msg-time">{m.timestamp}</time>
+                      </header>
+
+                      {m.addressing && (
+                        <div className="msg-challenge-ref">
+                          <IconReplyTarget size={13} />
+                          <span>
+                            Challenging{' '}
+                            <strong>{m.opponentName || (isA ? selected[1].name : selected[0].name)}</strong>{' '}
+                            on: <em>“{m.addressing}”</em>
+                          </span>
+                        </div>
+                      )}
+
+                      <p className="msg-text">{m.text}</p>
+                    </div>
+                  </article>
+                </div>
+              )
+            })}
+
+            {typing && status !== 'completed' && (
+              <div className="typing-banner" aria-live="polite">
+                <div className="typing-dots" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <span>
+                  {status === 'synthesizing'
+                    ? 'Stage 05 (Synthesis): Distilling strongest arguments into one consolidated final answer...'
+                    : `${
+                        nextPendingMsg?.modelName || selected[0].name
+                      } is formulating a ${
+                        nextPendingMsg?.stageLabel?.toLowerCase() || 'response'
+                      }...`}
                 </span>
               </div>
             )}
-            {status==='completed' && (
-              <div style={{background:'linear-gradient(135deg, rgba(0,217,255,0.12), rgba(66,133,255,0.12))', border:'1px solid rgba(0,217,255,0.22)', borderRadius:12, padding:12, textAlign:'center'}}>
-                <b style={{color:'var(--cyan)'}}>✓ All 4 rounds complete — synthesis ready</b>
-                <div style={{fontSize:12, color:'var(--text-secondary)', marginTop:4}}>View the consolidated answer</div>
-                <button className="btn-primary" style={{marginTop:10}} onClick={()=>setView('results')}>View Final Answer →</button>
+
+            {status === 'completed' && (
+              <div className="synthesis-complete-banner">
+                <div className="synthesis-banner-info">
+                  <span className="eyebrow">
+                    <span className="eyebrow-dot" />
+                    <span>STAGE 05 COMPLETE</span>
+                  </span>
+                  <strong>All 4 debate rounds complete — synthesis ready</strong>
+                  <p>
+                    The strongest insights from {selected[0].name} and {selected[1].name} have been consolidated.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => setView('results')}
+                >
+                  <span>View Final Answer</span>
+                  <IconArrowRight size={15} />
+                </button>
               </div>
             )}
           </div>
+
           <div className="arena-actions">
-            <button className="btn-ghost" onClick={skip}>Skip to Results →</button>
-            <button className="btn-secondary" onClick={()=>setView('config')}>Change Models</button>
+            <button type="button" className="btn-ghost" onClick={skip}>
+              Skip to Results
+            </button>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => setView('config')}
+            >
+              Change Models
+            </button>
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   )
 }
 
-function Results({ selected, question, finalAnswer, insights, setView, battleData, setBattleData, setQuestion, setSelected }){
-  const [feedback, setFeedback] = useState("")
+function Results({
+  selected,
+  question,
+  finalAnswer,
+  insights,
+  setView,
+  setBattleData,
+  setQuestion,
+  setSelected
+}) {
+  const [feedback, setFeedback] = useState('')
+
   const copy = async () => {
-    try{
-      if(navigator.clipboard?.writeText){
+    try {
+      if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(finalAnswer)
-        setFeedback("✓ Copied to clipboard!")
+        setFeedback('Copied final answer to clipboard.')
       } else {
-        // fallback
         const ta = document.createElement('textarea')
         ta.value = finalAnswer
         document.body.appendChild(ta)
         ta.select()
         document.execCommand('copy')
         ta.remove()
-        setFeedback("✓ Copied!")
+        setFeedback('Copied final answer to clipboard.')
       }
-    } catch{
-      setFeedback("Copy failed — please select and copy manually.")
+    } catch {
+      setFeedback('Copy failed — please select and copy the text manually.')
     }
-    setTimeout(()=>setFeedback(""), 2500)
+    setTimeout(() => setFeedback(''), 2800)
   }
 
   const tryAnother = () => {
-    // spec: clear question, messages, progress, synthesis, restore defaults (empty)
-    setQuestion("")
+    setQuestion('')
     setBattleData(null)
-    // keep models? spec says restore appropriate defaults or empty slots — we clear to empty for fresh
-    setSelected([null,null])
+    setSelected([null, null])
     setView('config')
-    window.scrollTo({top:0, behavior:'smooth'})
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const viewDebate = () => {
@@ -575,108 +1291,309 @@ function Results({ selected, question, finalAnswer, insights, setView, battleDat
   }
 
   return (
-    <div className="container results-wrap">
+    <main className="container results-wrap">
       <div className="results-head">
-        <div className="badge">Synthesis Complete • One Answer</div>
-        <h1 style={{marginTop:10}}>🏆 SANGRAM AI: FINAL ANSWER</h1>
+        <span className="eyebrow">
+          <span className="eyebrow-dot" />
+          <span>SYNTHESIS COMPLETE</span>
+        </span>
+        <h1>SANGRAM AI: FINAL ANSWER</h1>
         <p>Synthesized from the strongest insights of the debate.</p>
-        <div className="arena-question" style={{marginTop:12, textAlign:'left', maxWidth:760, marginInline:'auto'}}>
-          <b>Question:</b> “{question}” <span style={{marginLeft:6, fontSize:10, background:'rgba(255,255,255,0.08)', padding:'3px 8px', borderRadius:999, border:'1px solid var(--border)'}}>{selected[0]?.name} vs {selected[1]?.name}</span>
-        </div>
-        <div className="sim-badge">◉ Simulated synthesis • Demonstration content only</div>
       </div>
 
-      <div className="final-card">
-        <b>Consolidated Final Answer • SANGRAM Synthesis Engine</b>
-        <p>{finalAnswer}</p>
-      </div>
-
-      <div className="insights">
-        <div className="insight">
-          <h4><i style={{background: selected[0]?.color || '#00D9FF'}}>{selected[0]?.icon || '◉'}</i> Strongest from {selected[0]?.name || 'Model A'}</h4>
-          <p>{insights?.a || 'No insights available.'}</p>
+      {/* Debate Context Bar */}
+      <div className="results-context-bar">
+        <div className="results-context-question">
+          <span className="context-label">QUESTION</span>
+          <p>{question}</p>
         </div>
-        <div className="insight">
-          <h4><i style={{background: selected[1]?.color || '#4285FF'}}>{selected[1]?.icon || '⬢'}</i> Strongest from {selected[1]?.name || 'Model B'}</h4>
-          <p>{insights?.b || 'No insights available.'}</p>
+        <div className="results-context-matchup">
+          <span className="context-label">PARTICIPANTS</span>
+          <div className="context-fighters">
+            <span>{selected[0]?.name || 'Model A'}</span>
+            <span className="context-vs">VS</span>
+            <span>{selected[1]?.name || 'Model B'}</span>
+          </div>
         </div>
       </div>
 
-      <div className="result-actions">
-        <button className="btn-primary" onClick={copy}>Copy Answer</button>
-        <button className="btn-secondary" onClick={viewDebate}>View Full Debate →</button>
-        <button className="btn-ghost" onClick={tryAnother}>Try Another Battle ↺</button>
-      </div>
-      {feedback && <div className={`copy-feedback ${feedback.includes('failed')?'err':'ok'}`}>{feedback}</div>}
-
-      <div style={{textAlign:'center', marginTop:16, fontSize:12, color:'var(--text-muted)'}}>
-        This synthesis is mock demonstration data tailored to your question. It does not represent a verified expert answer.
-      </div>
-    </div>
-  )
-}
-
-function CompletedDebate({ selected, question, battleData, setView }){
-  // read-only timeline
-  return (
-    <div className="container arena-page">
-      <div style={{display:'flex', justifyContent:'space-between', gap:12, alignItems:'center', flexWrap:'wrap', marginBottom:14}}>
-        <h2 style={{fontFamily:'Space Grotesk'}}>Full Debate Timeline — Completed</h2>
-        <div style={{display:'flex', gap:8}}>
-          <button className="btn-primary" onClick={()=>setView('results')}>← Back to Final Answer</button>
-          <button className="btn-ghost" onClick={()=>setView('config')}>New Battle</button>
+      {/* Primary Focus: Consolidated Answer Surface */}
+      <section className="final-card" aria-label="Consolidated Final Answer">
+        <div className="final-card-header">
+          <span className="final-card-label">CONSOLIDATED CONCLUSION</span>
+          <span className="final-card-meta">4 Rounds Synthesized</span>
         </div>
-      </div>
-      <div className="arena-header">
-        <div className="arena-models">
-          <div className="arena-model"><i style={{background:selected[0]?.color}}>{selected[0]?.icon}</i>{selected[0]?.name} <small style={{color:'var(--text-secondary)'}}>{selected[0]?.provider}</small></div>
-          <div className="arena-vs">VS</div>
-          <div className="arena-model"><i style={{background:selected[1]?.color}}>{selected[1]?.icon}</i>{selected[1]?.name} <small style={{color:'var(--text-secondary)'}}>{selected[1]?.provider}</small></div>
-        </div>
-        <div className="arena-question"><b>Question:</b> {question}</div>
-      </div>
-      <div className="timeline" style={{marginTop:16}}>
-        <div className="timeline-list" style={{maxHeight:'none'}}>
-          {battleData?.messages.map(m=>(
-            <div key={m.id} className="msg">
-              <div className="msg-avatar" style={{background:m.color}}>{m.icon}</div>
-              <div className={`msg-body ${m.speaker==='A'?'ownA':'ownB'}`}>
-                <div className="msg-meta"><b>{m.modelName}</b><small>Round {m.round}</small><em>• {m.timestamp}</em></div>
-                <p>{m.text}</p>
-                {m.addressing && <div className="reply">↳ Addressing: {m.addressing}</div>}
+        <p className="final-card-body">{finalAnswer}</p>
+      </section>
+
+      {/* Supporting Insights from Each Model */}
+      <section className="insights-section" aria-label="Supporting Model Insights">
+        <h2 className="insights-heading">Supporting Perspectives from the Debate</h2>
+        <div className="insights">
+          <article className="insight insight-a">
+            <div className="insight-head">
+              <ModelIcon
+                id={selected[0]?.id || 'chatgpt'}
+                color={selected[0]?.color || '#00D9FF'}
+                size={32}
+              />
+              <div>
+                <span className="insight-role">FIGHTER 01 CONTRIBUTION</span>
+                <h4>{selected[0]?.name || 'Model A'}</h4>
               </div>
             </div>
-          ))}
+            <p>{insights?.a || 'No supporting insight recorded.'}</p>
+          </article>
+
+          <article className="insight insight-b">
+            <div className="insight-head">
+              <ModelIcon
+                id={selected[1]?.id || 'gemini'}
+                color={selected[1]?.color || '#4388FF'}
+                size={32}
+              />
+              <div>
+                <span className="insight-role">FIGHTER 02 CONTRIBUTION</span>
+                <h4>{selected[1]?.name || 'Model B'}</h4>
+              </div>
+            </div>
+            <p>{insights?.b || 'No supporting insight recorded.'}</p>
+          </article>
         </div>
+      </section>
+
+      {/* Primary Result Actions */}
+      <div className="result-actions">
+        <button type="button" className="btn-primary" onClick={copy}>
+          <IconCopy size={16} />
+          <span>Copy Answer</span>
+        </button>
+        <button type="button" className="btn-secondary" onClick={viewDebate}>
+          <span>View Full Debate</span>
+          <IconArrowRight size={15} />
+        </button>
+        <button type="button" className="btn-ghost" onClick={tryAnother}>
+          <IconReset size={15} />
+          <span>Try Another Battle</span>
+        </button>
       </div>
-    </div>
+
+      {feedback && (
+        <div
+          className={`copy-feedback ${feedback.includes('failed') ? 'err' : 'ok'}`}
+          role="status"
+        >
+          {feedback}
+        </div>
+      )}
+
+      <p className="results-disclaimer">
+        Simulated synthesis generated from local demonstration templates. Not generated or verified by live external AI APIs.
+      </p>
+    </main>
   )
 }
 
-export default function App(){
+function CompletedDebate({ selected, question, battleData, setView }) {
+  return (
+    <main className="container arena-page">
+      <div className="completed-top-bar">
+        <div>
+          <span className="eyebrow">COMPLETE TRANSCRIPT</span>
+          <h2>Full Debate Timeline</h2>
+        </div>
+        <div className="completed-top-actions">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => setView('results')}
+          >
+            <IconArrowLeft size={15} />
+            <span>Back to Final Answer</span>
+          </button>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => setView('config')}
+          >
+            New Battle
+          </button>
+        </div>
+      </div>
+
+      <section className="arena-header">
+        <div className="arena-header-top">
+          <div className="arena-models">
+            <div className="arena-model fighter-chip-a">
+              <ModelIcon
+                id={selected[0]?.id}
+                color={selected[0]?.color}
+                size={30}
+              />
+              <div className="arena-model-text">
+                <span className="arena-fighter-tag">FIGHTER 01</span>
+                <strong>{selected[0]?.name}</strong>
+                <small>{selected[0]?.provider}</small>
+              </div>
+            </div>
+            <div className="arena-vs">VS</div>
+            <div className="arena-model fighter-chip-b">
+              <ModelIcon
+                id={selected[1]?.id}
+                color={selected[1]?.color}
+                size={30}
+              />
+              <div className="arena-model-text">
+                <span className="arena-fighter-tag">FIGHTER 02</span>
+                <strong>{selected[1]?.name}</strong>
+                <small>{selected[1]?.provider}</small>
+              </div>
+            </div>
+          </div>
+          <div className="arena-stage-status">
+            <span className="status-dot done" />
+            <span>4 Rounds Completed</span>
+          </div>
+        </div>
+        <div className="arena-question-bar">
+          <span className="question-bar-label">DEBATE QUESTION</span>
+          <p className="question-bar-text">{question}</p>
+        </div>
+      </section>
+
+      <section className="timeline completed-timeline">
+        <div className="timeline-list completed-list">
+          {battleData?.messages.map((m, idx) => {
+            const isA = m.speaker === 'A'
+            const prevMsg = idx > 0 ? battleData.messages[idx - 1] : null
+            const isNewRound = !prevMsg || prevMsg.round !== m.round
+            const stageInfo = stages.find((s) => s.round === m.round)
+
+            return (
+              <div key={m.id} className="timeline-item-group">
+                {isNewRound && (
+                  <div className="round-divider">
+                    <span className="round-divider-num">ROUND 0{m.round}</span>
+                    <span className="round-divider-label">
+                      {stageInfo?.label || `Round ${m.round}`}
+                    </span>
+                    <span className="round-divider-line" />
+                  </div>
+                )}
+
+                <article
+                  className={`msg round-type-${m.round} ${
+                    isA ? 'speaker-a' : 'speaker-b'
+                  }`}
+                >
+                  <div className="msg-sidebar">
+                    <ModelIcon id={m.modelId} color={m.color} size={34} />
+                    <div className="msg-vertical-line" />
+                  </div>
+
+                  <div className="msg-content">
+                    <header className="msg-meta">
+                      <span className="msg-fighter-badge">
+                        {isA ? 'FIGHTER 01' : 'FIGHTER 02'}
+                      </span>
+                      <strong className="msg-model-name">{m.modelName}</strong>
+                      <span className="msg-provider">{m.provider}</span>
+                      <span className="msg-stage-tag">
+                        {m.stageLabel || `Round ${m.round}`}
+                      </span>
+                      <time className="msg-time">{m.timestamp}</time>
+                    </header>
+
+                    {m.addressing && (
+                      <div className="msg-challenge-ref">
+                        <IconReplyTarget size={13} />
+                        <span>
+                          Challenging{' '}
+                          <strong>
+                            {m.opponentName ||
+                              (isA ? selected[1]?.name : selected[0]?.name)}
+                          </strong>{' '}
+                          on: <em>“{m.addressing}”</em>
+                        </span>
+                      </div>
+                    )}
+
+                    <p className="msg-text">{m.text}</p>
+                  </div>
+                </article>
+              </div>
+            )
+          })}
+        </div>
+      </section>
+    </main>
+  )
+}
+
+export default function App() {
   const [view, setView] = useState('landing')
-  const [selected, setSelected] = useState([null,null])
-  const [question, setQuestion] = useState("")
+  const [selected, setSelected] = useState([null, null])
+  const [question, setQuestion] = useState('')
   const [battleData, setBattleData] = useState(null)
-  const [finalAnswer, setFinalAnswer] = useState("")
+  const [finalAnswer, setFinalAnswer] = useState('')
   const [insights, setInsights] = useState(null)
 
-  // ensure view scrolls top
-  useEffect(()=>{ window.scrollTo({top:0, behavior:'smooth'}) }, [view])
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [view])
 
   const handleReset = () => {
     setView('config')
-    // don't clear battleData unless user wants new; but allow exit
   }
 
   return (
-    <div style={{minHeight:'100vh', background:'var(--bg-primary)'}}>
-      <Navbar view={view} setView={setView}/>
-      {view==='landing' && <Landing setView={setView}/>}
-      {view==='config' && <Config selected={selected} setSelected={setSelected} question={question} setQuestion={setQuestion} setView={setView} setBattleData={setBattleData} setStatus={()=>{}}/>}
-      {view==='arena' && <Arena selected={selected} question={question} battleData={battleData} view={view} setView={setView} setFinalAnswer={setFinalAnswer} setInsightsState={setInsights} onReset={handleReset}/>}
-      {view==='arena-done' && <CompletedDebate selected={selected} question={question} battleData={battleData} setView={setView}/>}
-      {view==='results' && <Results selected={selected} question={question} finalAnswer={finalAnswer} insights={insights} setView={setView} battleData={battleData} setBattleData={setBattleData} setQuestion={setQuestion} setSelected={setSelected}/>}
+    <div className="app-shell">
+      <Navbar view={view} setView={setView} />
+      {view === 'landing' && <Landing setView={setView} />}
+      {view === 'config' && (
+        <Config
+          selected={selected}
+          setSelected={setSelected}
+          question={question}
+          setQuestion={setQuestion}
+          setView={setView}
+          setBattleData={setBattleData}
+          setStatus={() => {}}
+        />
+      )}
+      {view === 'arena' && (
+        <Arena
+          selected={selected}
+          question={question}
+          battleData={battleData}
+          view={view}
+          setView={setView}
+          setFinalAnswer={setFinalAnswer}
+          setInsightsState={setInsights}
+          onReset={handleReset}
+        />
+      )}
+      {view === 'arena-done' && (
+        <CompletedDebate
+          selected={selected}
+          question={question}
+          battleData={battleData}
+          setView={setView}
+        />
+      )}
+      {view === 'results' && (
+        <Results
+          selected={selected}
+          question={question}
+          finalAnswer={finalAnswer}
+          insights={insights}
+          setView={setView}
+          battleData={battleData}
+          setBattleData={setBattleData}
+          setQuestion={setQuestion}
+          setSelected={setSelected}
+        />
+      )}
     </div>
   )
 }

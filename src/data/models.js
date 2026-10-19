@@ -4,59 +4,67 @@ export const models = [
     name: 'ChatGPT',
     provider: 'OpenAI',
     model: 'GPT-4o',
-    desc: 'Versatile reasoning with strong general knowledge and creative fluency.',
+    desc: 'Versatile reasoning with strong general knowledge and structured analytical fluency.',
     color: '#10A37F',
     accent: '#00D9FF',
-    icon: '◉'
+    icon: 'GPT'
   },
   {
     id: 'gemini',
     name: 'Gemini',
     provider: 'Google',
     model: 'Gemini 1.5 Pro',
-    desc: 'Multimodal powerhouse optimized for speed, context and web-aware reasoning.',
-    color: '#4285F4',
+    desc: 'Long-context multimodal architecture optimized for synthesis and broad retrieval.',
+    color: '#4388FF',
     accent: '#8AB4F8',
-    icon: '⬢'
+    icon: 'GEM'
   },
   {
     id: 'claude',
     name: 'Claude',
     provider: 'Anthropic',
     model: 'Claude 3.5 Sonnet',
-    desc: 'Nuanced, safety-focused conversationalist with deep analytical depth.',
+    desc: 'Nuanced, methodical reasoning with strong critique and deep analytical precision.',
     color: '#D4A574',
     accent: '#FFB87A',
-    icon: '⬣'
+    icon: 'CLD'
   },
   {
     id: 'llama',
     name: 'Llama',
     provider: 'Meta',
     model: 'Llama 3.1 405B',
-    desc: 'Open-weight champion built for customization and broad community power.',
-    color: '#0668E1',
-    accent: '#4A9EFF',
-    icon: '⬔'
+    desc: 'Flagship open-weights model engineered for rigorous technical and systems tasks.',
+    color: '#2563EB',
+    accent: '#60A5FA',
+    icon: 'LLM'
   },
   {
     id: 'mistral',
     name: 'Mistral',
     provider: 'Mistral AI',
     model: 'Mistral Large 2',
-    desc: 'European efficiency with sharp code generation and multilingual skill.',
-    color: '#FF7000',
-    accent: '#FF9A4D',
-    icon: '⬥'
+    desc: 'High-efficiency frontier model with sharp code reasoning and concise argumentation.',
+    color: '#EA580C',
+    accent: '#FB923C',
+    icon: 'MST'
   },
   {
     id: 'grok',
     name: 'Grok',
     provider: 'xAI',
     model: 'Grok-2',
-    desc: 'Unfiltered, witty and real-time aware with a rebellious edge.',
-    color: '#111111',
-    accent: '#00D9FF',
-    icon: '⬘'
+    desc: 'Direct, first-principles challenger built to stress-test conventional assumptions.',
+    color: '#64748B',
+    accent: '#94A3B8',
+    icon: 'GRK'
   }
+]
+
+export const examplePrompts = [
+  'Python vs JavaScript for beginners.',
+  'Which technology should I learn next?',
+  'What is the best solution to this coding problem?',
+  'Is remote work better than office work?',
+  'What will AI look like in 2030?',
 ]

@@ -138,19 +138,36 @@ export function generateBattle(selectedModels, question){
     insights = genericInsights(aName, bName, question)
   }
 
-  const messages = raw.map((m, i) => ({
-    id: `m-${i}`,
-    round: m.round,
-    speaker: m.speaker, // A or B
-    modelId: m.speaker === 'A' ? a.id : b.id,
-    modelName: m.speaker === 'A' ? a.name : b.name,
-    provider: m.speaker === 'A' ? a.provider : b.provider,
-    color: m.speaker === 'A' ? a.color : b.color,
-    icon: m.speaker === 'A' ? a.icon : b.icon,
-    text: m.text,
-    addressing: m.addressing,
-    timestamp: makeTimestamp(i)
-  }))
+  const roundTypeMap = {
+    1: { label: 'Opening Argument', phase: 'Opening Arguments' },
+    2: { label: 'Counterargument', phase: 'Counterarguments' },
+    3: { label: 'Rebuttal', phase: 'Rebuttals' },
+    4: { label: 'Final Discussion', phase: 'Final Discussion' }
+  }
+
+  const messages = raw.map((m, i) => {
+    const isA = m.speaker === 'A'
+    const currentModel = isA ? a : b
+    const opponentModel = isA ? b : a
+    const roundMeta = roundTypeMap[m.round] || { label: `Round ${m.round}`, phase: `Round ${m.round}` }
+    return {
+      id: `m-${i}`,
+      round: m.round,
+      stageLabel: roundMeta.label,
+      phaseLabel: roundMeta.phase,
+      speaker: m.speaker, // A or B
+      modelId: currentModel.id,
+      modelName: currentModel.name,
+      opponentName: opponentModel.name,
+      provider: currentModel.provider,
+      modelVersion: currentModel.model,
+      color: currentModel.color,
+      icon: currentModel.icon,
+      text: m.text,
+      addressing: m.addressing,
+      timestamp: makeTimestamp(i)
+    }
+  })
 
   return { messages, finalAnswer, insights }
 }
