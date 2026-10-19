@@ -3,3 +3,7 @@ dist
 .env
 .DS_Store
 coverage
+
+# generated smoke-test bundles
+.smoke/run.cjs
+.smoke/flow.cjs
